@@ -43,13 +43,13 @@ class irodsRepositoryClient():
         filepath = filepath + "/" + coll.name
         try:
             print "Remove old data: ", filepath
-            shutil.rmtree('filepath')
+            shutil.rmtree(filepath)
         except OSError:
             print filepath, "does not exist." 
         os.makedirs(filepath)
         
         for obj in coll.data_objects:
-            buff = session.data_objects.open(obj.path, 'r').read()
+            buff = self.session.data_objects.open(obj.path, 'r').read()
             with open(filepath+'/'+obj.name, 'wb') as f:
                 f.write(buff)
 
@@ -63,18 +63,19 @@ class irodsRepositoryClient():
         '''
         coll = self.session.collections.get(collPath)
         acl = iRODSAccess('read', coll.path, 'public', self.session.zone)
-        owners = ()
+        owners = set()
         self.session.permissions.set(acl)
         for obj in coll.data_objects:
             acl = iRODSAccess('read', obj.path, 'public', self.session.zone)
+            self.session.permissions.set(acl)
+            acl = iRODSAccess('null', obj.path, obj.owner_name, self.session.zone)
+            self.session.permissions.set(acl)
+            acl = iRODSAccess('read', obj.path, obj.owner_name, self.session.zone)
             self.session.permissions.set(acl)
             owners.add(obj.owner_name)
 
         return owners
             
-
-        return False
-
     def openCollection(self, collPath, owners):
         '''
         Open collection for writing to certain iRODS users.
@@ -105,7 +106,7 @@ class irodsRepositoryClient():
             errorMsg.append('B2SHARE PUBLISH ERROR: Missing Metadata PID.')
         if 'CREATOR' not in keys:
             errorMsg.append('B2SHARE PUBLISH ERROR: Missing Metadata CREATOR.')
-        if 'PID/B2SHARE' in keys:
+        if 'B2SHARE/DOI' in keys:
             errorMsg.append('B2SHARE PUBLISH ERROR: Data is already published.')
         return errorMsg
 
@@ -154,9 +155,43 @@ class irodsRepositoryClient():
         coll = self.session.collections.get(collPath)
         names = [obj.name for obj in coll.data_objects]
         pids = [i.value for obj in coll.data_objects for i in obj.metadata.items() if i.name == 'PID']
-        members = ["File: "+ n +"; PID: http://hdl.handle.net/"+p+"?noredirect" for (n, p) in zip (names, pid)]
+        if len(pids) == len(names):
+            members = ["File: "+ n +"; PID: http://hdl.handle.net/"+p+"?noredirect" for (n, p) in zip (names, pids)]
+            return members
+        else:
+            return names
 
-        return members
+    def addPublishID(collPath, doi, repoName, id=''):
+        '''
+        Adds a PID from the repository to a colletion in iRODS.
+        key:    repoName/DOI: doi
+                repoName/ID: id
+        '''
+
+        return False
+
+    def createB2shareDraftMeta(collPath, metaMap, members):
+        '''
+        Creating a draft and adding all metadata.
+        '''
+        draftID = ''
+        
+        return draftID
+
+    def addDataB2ShareDraft(folderPath, draftID):
+        '''
+        Uploads local files to created draft.
+        '''
+        
+        return False
+
+    def publishB2Share(draftID):
+        '''
+        Publishes a B2SHARE draft
+        '''
+        doi = ''
+        b2shareId = ''
+
+        return (doi, b2shareId)
 
 
- 
