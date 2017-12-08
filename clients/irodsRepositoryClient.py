@@ -9,13 +9,15 @@ from irods.session import iRODSSession
 from irods.access import iRODSAccess
 import os
 import shutil
+import requests
 
 class irodsRepositoryClient():
 
-    def __init__(self, envFile, apiToken, apiUrl):
+    def __init__(self, envFile, apiToken, apiUrl, communityId):
         self.session = iRODSSession(irods_env_file=envFile)
         self.apiToken = apiToken
         self.apiUrl = apiUrl
+        self.community = communityId
 
     def collSize(self, collPath):
         coll = self.session.collections.get(collPath)
@@ -167,25 +169,66 @@ class irodsRepositoryClient():
         key:    repoName/DOI: doi
                 repoName/ID: id
         '''
-
-        return False
-
-    def createB2shareDraftMeta(collPath, metaMap, members):
-        '''
-        Creating a draft and adding all metadata.
-        '''
-        draftID = ''
+        coll = self.session.collections.get(collPath)
+        coll.metadata.add(repoName+'/DOI', doi)
+        if id != '':
+            coll.metadata.add(repoName+'/ID', id)
         
+        return
+
+    def createB2shareDraft(metaMap):
+        '''
+        Create a draft in B2SHARE
+        '''
+        errorMsg = []
+        draftId = ''
+        draftUrl = self.apiUrl + "records/?access_token=" + self.apiToken
+
+        #create draft
+        data = '{"titles":[{"title":"'+metamap['title']+'"}], "community":"' + self.community + \
+            '", "open_access":true, "community_specific": {}}'
+        headers = {"Content-Type":"application/json"}
+        request = requests.post(url = draftUrl, headers=headers, data = data )
+
+        if request.status not in range(200, 300):
+            errorMsg.append('B2SHARE PUBLISH ERROR: Draft not created: ' + request.status)
+            return (errorMsg, draftId)
+        draftId = draft.json()['id']
+
+        return (errorMsg, draftId)
+
+    def patchB2shareDraft(draftId, metaMap, members):
+        '''
+        Patching a draft and adding all metadata.
+        '''
+        errorMsg = []
+        
+        #description
+        patchUrl = self.apiUrl + "records/" + draftId + "/draft?access_token=" + self.apiToken    
+        patch = '[{"op":"add","path":"/descriptions","value":[{"description":"'+ metaMap['seriesinformation'] + \
+            '", "description_type":"SeriesInformation"},{"description":"'+metaMap['description'] + \
+            '", "description_type":"Abstract"}]}]'
+        request = requests.patch(url=patchUrl, headers=headers, data=patch)
+        if request.status not in range(200, 300):
+            errorMsg.append('B2SHARE PUBLISH ERROR: Draft not patched: ' + draftId +' '+ request.status)
+            return (errorMsg, draftId)
+
+        #collection identifier
+        patch = '[{"op":"add","path":"/alternate_identifiers","value":[{"alternate_identifier":"'+ metaMap[identifier] + \
+            '", "alternate_identifier_type":"' + metaMap[pidtype] + '"}]}]'
+        request = requests.patch(url=patch_url, headers=headers, data=patch)
+
+
         return draftID
 
-    def addDataB2ShareDraft(folderPath, draftID):
+    def addDataB2shareDraft(folderPath, draftID):
         '''
         Uploads local files to created draft.
         '''
         
         return False
 
-    def publishB2Share(draftID):
+    def publishB2share(draftID):
         '''
         Publishes a B2SHARE draft
         '''
@@ -193,5 +236,3 @@ class irodsRepositoryClient():
         b2shareId = ''
 
         return (doi, b2shareId)
-
-
