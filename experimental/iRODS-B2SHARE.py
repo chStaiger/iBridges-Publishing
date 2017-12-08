@@ -1,3 +1,9 @@
+"""
+@licence: Apache 2.0
+@Copyright (c) 2017, Christine Staiger (SURFsara)
+@author: Christine Staiger
+"""
+
 # Integrating B2SHARE and B2SAFE as a user
 # 
 
