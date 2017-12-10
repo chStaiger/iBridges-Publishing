@@ -296,7 +296,7 @@ class irodsRepositoryClient():
                 errorMsg.append('B2SHARE PUBLISH ERROR: File not uploaded '+ \ 
                     localPath+"/"+f +', ' + str(request.status_code))
  
-        returr errorMsg
+        return errorMsg
 
     def publishB2share(self):
         '''
