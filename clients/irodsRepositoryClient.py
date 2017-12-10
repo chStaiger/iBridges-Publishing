@@ -191,19 +191,17 @@ class irodsRepositoryClient():
     
         return metaMap
 
-    def addPublishID(self, repoName, id=''):
+    def addPublishID(self, repoName, doi, id=''):
         '''
         Adds a PID from the repository to a collection in iRODS.
         key:    repoName/DOI: doi
                 repoName/ID: id
         '''
         
-        self.coll.metadata.add(repoName+'/DOI', self.doi)
+        self.coll.metadata.add(repoName+'/DOI', doi)
         if id != '':
-            self.coll.metadata.add(repoName+'/ID', id)
+            self.coll.metadata.add(repoName+'/ID', self.draftId)
         
-        return
-
     def createB2shareDraft(self, metaMap):
         '''
         Create a draft in B2SHARE
@@ -293,7 +291,7 @@ class irodsRepositoryClient():
             response = requests.put(url=upload_files_url,
                 headers = headers, files = files )
             if response.status_code not in range(200, 300):
-                errorMsg.append('B2SHARE PUBLISH ERROR: File not uploaded '+ \ 
+                errorMsg.append('B2SHARE PUBLISH ERROR: File not uploaded ' +  
                     localPath+"/"+f +', ' + str(request.status_code))
  
         return errorMsg
@@ -303,11 +301,10 @@ class irodsRepositoryClient():
         Publishes a B2SHARE draft
         '''
         b2shareId = ''
+        headers = {"Content-Type":"application/json-patch+json"}
         patch = '[{"op":"add", "path":"/publication_state", "value":"submitted"}]'
         response = requests.patch(url=self.getDraftUrl(), headers=headers, data=patch)
         r = json.loads(requests.get(self.getDraftUrl()).text)    
         doi = r['metadata']['DOI']        
 
-        return b2shareId
-
-
+        return doi
