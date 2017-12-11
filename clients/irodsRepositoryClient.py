@@ -7,11 +7,14 @@
 """
 from irods.session import iRODSSession
 from irods.access import iRODSAccess
+import irods.keywords as kw
+
 import os
 import shutil
 import requests
 import getpass
 import uuid
+import json
 
 class irodsRepositoryClient():
 
@@ -46,6 +49,9 @@ class irodsRepositoryClient():
             errorMsg.append('PUBLISH ERROR: Collection contains subcollections.')
         if self.coll.data_objects == []:
             errorMsg.append('PUBLISH ERROR: Collection does not contain data.')
+        if 'B2SHARE/DOI' in keys:
+            errorMsg.append('B2SHARE PUBLISH ERROR: Data is already published.')
+
         return errorMsg
 
     def localCopyData(self, path = '/tmp'):
@@ -79,7 +85,7 @@ class irodsRepositoryClient():
 
         return tickets
 
-    def assignPID(self, pidCredentials, all = True):
+    def assignPID(self, pidClient, all = True):
         '''
         Creates epic PIDs for the collection and all its members.
         Returns a dictionary mapping from iRODS paths to PIDs.
@@ -225,7 +231,7 @@ class irodsRepositoryClient():
     def getDraftUrl(self):
         return self.apiUrl + "records/" + self.draftId + "/draft?access_token=" + self.apiToken
 
-    def patchB2shareDraft(self, metaMap, members = [], pids = {}, tickets = {}):
+    def patchB2shareDraft(self, metaMap, pids = {}, tickets = {}):
         '''
         Patching a draft and adding all metadata.
         '''
@@ -286,7 +292,7 @@ class irodsRepositoryClient():
         for f in os.listdir(localPath):
             upload_files_url = r['links']['files'] + "/" + f + "?access_token=" + self.apiToken
             files = {'file' : open(localPath+"/"+f, 'rb')}
-            headers = {'Accept':'application/json','Content-Type':'application/octet-stream'}
+            headers = {'Accept':'application/json','Content-Type':'application/octet-stream --data-binary'}
 
             response = requests.put(url=upload_files_url,
                 headers = headers, files = files )
@@ -308,3 +314,27 @@ class irodsRepositoryClient():
         doi = r['metadata']['DOI']        
 
         return doi
+
+    def createReport(self, content, owners=[]):
+        '''
+        Creates a report file for the users in /zone/home/public.
+        Naming convention: user1-user2-..._collection.status
+        content - list of strings
+        owners - iterable 
+        '''
+        message = '\n'.join([str(i) for i in content])
+        users   = '-'.join(owners)
+        iPath   = '/'+self.session.zone+'/home/public/'+users+'_'+self.coll.name+'.status'
+        
+        try:
+            obj = self.session.data_objects.create(iPath) 
+        except Exception:
+            obj = self.session.data_object.get(iPath)
+        with obj.open('w') as obj_desc:
+            obj_desc.write(message)
+
+        for user in owners:
+            acl = iRODSAccess('write', iPath, user, self.session.zone)
+            self.session.permissions.set(acl) 
+        
+    
