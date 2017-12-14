@@ -84,4 +84,4 @@ irc.createReport(message, owners)
 # If user is OK publish
 doi = extend(irc)
 message.extend(['', 'Datapublished under DOI', doi])
-irc.addPublishID(self, repoName, doi, id=irc.draftId)
+irc.addPublishID(repoName, doi, id=irc.draftId)
