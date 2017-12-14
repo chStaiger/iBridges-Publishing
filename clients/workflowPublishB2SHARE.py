@@ -11,7 +11,7 @@ from b2handle.clientcredentials import PIDClientCredentials
 from b2handle.handleclient import EUDATHandleClient
 
 irodsEnvFile    = ''
-apiToken        = 'Cti7PPvLhemuLDT20f6Jj0ragxcxp7N5rYAHHeC8PMYU8dWgtyc4MZEzAXgx' 
+apiToken        = '******************************************' 
 apiUrl          = 'https://trng-b2share.eudat.eu/api/'
 community       = '9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
 collection      = 'public/b2share/publish' # iRODS collection to publish
