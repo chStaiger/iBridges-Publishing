@@ -17,7 +17,7 @@ class B2SHAREdraft():
         self.apiUrl     = apiUrl
         self.community  = communityId
         self.draftUrl   = draftUrl
-        self.repoName   = ‘B2SHARE’
+        self.repoName   = 'B2SHARE'
         self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHER']
 
 
