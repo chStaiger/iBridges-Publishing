@@ -15,3 +15,22 @@ Unless required by applicable law or agreed to in writing, software distributed 
 - Some classes and workflows to connect iRODS to other data services
 - directory with experimental scripts highlighting the workflow
 - directory with workflow and client implementations
+
+## Requirements
+- icommands
+- python 2.7
+- python-irodsclient v0.7
+- B2HANDLE python library
+- iRODS instance
+  - iRODS 4.1.10 or 4.2.1
+  - Rodsuser 'anonymous' with read rights to /zone/home/public/<repo_name> 
+  
+ ## Features
+ ### iRODS functionality
+ - Creation of tickets for anonymous access
+ 
+ ### Integration with B2SHARE
+ - Creating a B2SHARE deposit with either only metadata or metadata and data
+ - Mapping of metadata in IRODS to B2SHARE generic metadata template
+ - Creation of Perisistent Identifiers with B2HANDLE
+ - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
