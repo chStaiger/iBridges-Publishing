@@ -12,13 +12,13 @@ import json
 
 class B2SHAREdraft():
 
-    def __init__(self, apiToken, apiUrl, communityId, draftUrl = ‘’):
+    def __init__(self, apiToken, apiUrl, communityId, draftUrl = ''):
         self.apiToken   = apiToken
         self.apiUrl     = apiUrl
         self.community  = communityId
         self.draftUrl   = draftUrl
         self.repoName   = ‘B2SHARE’
-        self.metaKeys   = [‘CREATOR’, ‘TITLE’, ‘TABLEOFCONTENTS’, ‘SERIESINFORMATION’, ‘TECHNICALINFO’]
+        self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHER']
 
 
     def create(self, title):
@@ -70,7 +70,8 @@ class B2SHAREdraft():
         #irods_zone_name aliceZone;
         #iget/ils -t <ticket> /aliceZone/home/public/b2share/myDeposit'
         patch = '[{"op":"add","path":"/descriptions","value":[{"description":"'+ metadata['ABSTRACT'] + \
-            '", "description_type":"Abstract"},{"description":"'+metadata['SERIESINFORMATION'] + \
+            '", "description_type":"Abstract"},{"description":"'+ metadata['OTHERS'] + \
+            '", "description_type":"Others"},{"description":"'+metadata['SERIESINFORMATION'] + \
             '", "description_type":"SeriesInformation"}, {"description":"Ticket: '+metadata['TABLEOFCONTENTS'] + \
             '", "description_type":"TableOfContents"},{"description":"'+metadata['TECHNICALINFO'] + \
             '", "description_type":"TechnicalInfo"}]}]'
