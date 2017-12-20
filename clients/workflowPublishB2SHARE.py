@@ -28,13 +28,13 @@ community       = '9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
 #Other parameters for publication
 maxDataSize     = 2000 # in MB
 
-message = ['Upload to B2SHARE', str(datetime.datetime.now()), collection, '']
-
 # Instantiate iRODS
 ipc = irodsPublishCollection(irodsEnvFile, colleiction)
 
 # Instantiate B2SHARE draft
 draft = b2shareDraft(apiToken, apiUrl, community)
+
+message = ['Upload to' + draft.repoName, str(datetime.datetime.now()), collection, '']
 
 # Change ACLs for users to read only
 owners = ipc.close()
