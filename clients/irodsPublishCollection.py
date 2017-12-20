@@ -186,5 +186,18 @@ class irodsPublishCollection():
             metadata[item.name] = item.value
 
         return metadata
+    
+    def getMDall(self, key):
+        '''
+        Fetches all metadata with with a certain key from all members in a collection.
+        It assumes that the key is only present once.
+        Returns a dictionary iRODS path --> value
+        '''
+        metadata = {}
+        if key in self.coll.metadata.keys():
+            metadata[self.coll.path] = self.coll.metadata.get_one(key).value
+        for obj in self.coll.data_objects:
+            if key in obj.metadata.keys():
+                metadata[obj.path] = obj.coll.metadata.get_one(key).value
 
-
+        return metadata
