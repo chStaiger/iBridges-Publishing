@@ -1,4 +1,4 @@
-!/usr/bin/env python
+#!/usr/bin/env python
 
 """
 @licence: Apache 2.0
@@ -10,7 +10,7 @@
 import requests
 import json
 
-class B2SHAREdraft():
+class b2shareDraft():
 
     def __init__(self, apiToken, apiUrl, communityId, draftUrl = ''):
         self.apiToken   = apiToken
@@ -18,8 +18,7 @@ class B2SHAREdraft():
         self.community  = communityId
         self.draftUrl   = draftUrl
         self.repoName   = 'B2SHARE'
-        self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHER']
-
+        self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHERS']
 
     def create(self, title):
         '''
@@ -45,7 +44,7 @@ class B2SHAREdraft():
             "/draft?access_token=" + self.apiToken
         self.draftId = request.json()['id']
 
-    def patchGeneral(metadata):
+    def patchGeneral(self, metadata):
         '''
         Adds metadata to a B2SHARE draft.
         Mandatory metadata entries: CREATOR, TITLE
@@ -61,7 +60,7 @@ class B2SHAREdraft():
         response = requests.patch(url=self.draftUrl, headers=headers, data=patch)
         if response.status_code not in range(200, 300):
             errorMsg.append('B2SHARE PUBLISH ERROR: Draft not patched with creators. ' + \
-            str(request.status_code))
+            str(response.status_code))
         print "added creator"
 
         #DESCRIPTION: ABSTRACT, TOC, SERIESINFO, TECHNICALINFO
@@ -70,8 +69,8 @@ class B2SHAREdraft():
         #irods_zone_name aliceZone;
         #iget/ils -t <ticket> /aliceZone/home/public/b2share/myDeposit'
         patch = '[{"op":"add","path":"/descriptions","value":[{"description":"'+ metadata['ABSTRACT'] + \
-            '", "description_type":"Abstract"},{"description":"'+ metadata['OTHERS'] + \
-            '", "description_type":"Others"},{"description":"'+metadata['SERIESINFORMATION'] + \
+            '", "description_type":"Abstract"},{"description":"'+ metadata['OTHER'] + \
+            '", "description_type":"Other"},{"description":"'+metadata['SERIESINFORMATION'] + \
             '", "description_type":"SeriesInformation"}, {"description":"Ticket: '+metadata['TABLEOFCONTENTS'] + \
             '", "description_type":"TableOfContents"},{"description":"'+metadata['TECHNICALINFO'] + \
             '", "description_type":"TechnicalInfo"}]}]'
@@ -88,9 +87,11 @@ class B2SHAREdraft():
         Patches a draft with tickets as Resource Type.
         Expects a dictionary irods obj oath --> ticket
         '''
+        errorMsg = []
+        headers = {"Content-Type":"application/json-patch+json"}
         tmp = []
         for ticket in tickets:
-        tmp.append('{"resource_type": "path='+ticket+' ticket='+tickets[ticket]+\
+	    tmp.append('{"resource_type": "path='+ticket+' ticket='+tickets[ticket]+\
             '", "resource_type_general": "Dataset"}')
         patch = '[{"op":"add","path":"/resource_types","value":[' + ','.join(tmp)+']}]'
         request = requests.patch(url=self.draftUrl, headers=headers, data=patch)
@@ -104,6 +105,8 @@ class B2SHAREdraft():
         Patches a draft with PIDs as alternmate identifiers.
         Expects a diuctionary irods obj name --> pids
         '''
+        errorMsg = []
+        headers = {"Content-Type":"application/json-patch+json"}
         tmp = []
         for pid in pids:
             tmp.append('{"alternate_identifier": "'+pids[pid]+\
@@ -134,4 +137,14 @@ class B2SHAREdraft():
                 errorMsg.append('B2SHARE PUBLISH ERROR: File not uploaded ' +
                     localPath+"/"+f +', ' + str(request.status_code))
 
-        return errorMsg 
+        return errorMsg
+
+    def publish(self):
+
+        headers = {"Content-Type":"application/json-patch+json"}
+        patch = '[{"op":"add", "path":"/publication_state", "value":"submitted"}]'
+        response = requests.patch(url=self.draftUrl, headers=headers, data=patch)
+        r = json.loads(requests.get(self.draftUrl).text)    
+        doi = r['metadata']['DOI']        
+
+        return doi

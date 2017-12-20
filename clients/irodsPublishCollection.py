@@ -167,7 +167,8 @@ class irodsPublishCollection():
         Update metadata of collection.
         '''
         if key in self.coll.metadata.keys():
-            return ['METADATA INFO: Collection has already metadata with key: ' + key]
+            print 'METADATA INFO: Collection has already metadata with key: ' + key
+            print 'METADATA INFO: Update metadata entry.'
             for item in self.coll.metadata.items():
                 if item.name == key:
                     self.coll.metadata.remove(item)
