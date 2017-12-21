@@ -195,9 +195,9 @@ class irodsPublishCollection():
         '''
         metadata = {}
         if key in self.coll.metadata.keys():
-            metadata[self.coll.path] = self.coll.metadata.get_one(key).value
+            metadata[self.coll.path] = self.coll.metadata.get_all(key)[0].value
         for obj in self.coll.data_objects:
             if key in obj.metadata.keys():
-                metadata[obj.path] = obj.metadata.get_one(key).value
+                metadata[obj.path] = obj.metadata.get_all(key)[0].value
 
         return metadata
