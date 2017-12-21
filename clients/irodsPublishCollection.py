@@ -50,7 +50,7 @@ class irodsPublishCollection():
         if self.coll.data_objects == []:
             errorMsg.append('PUBLISH ERROR: Collection does not contain data.')
         if len(set(self.coll.metadata.keys()).intersection(repoKeys)) > 0:
-            errorMsg.append('REPOSITORY PUBLISH ERROR: Data is already published.')
+            errorMsg.append('PUBLISH ERROR: Data is already published.')
             for item in self.coll.metadata.items():
                 errorMsg.append(item.name+': '+item.value)
 
@@ -198,6 +198,6 @@ class irodsPublishCollection():
             metadata[self.coll.path] = self.coll.metadata.get_one(key).value
         for obj in self.coll.data_objects:
             if key in obj.metadata.keys():
-                metadata[obj.path] = obj.coll.metadata.get_one(key).value
+                metadata[obj.path] = obj.metadata.get_one(key).value
 
         return metadata

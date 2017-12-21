@@ -9,6 +9,7 @@
 #B2SHARE imports
 import requests
 import json
+import os
 
 class b2shareDraft():
 
@@ -18,7 +19,7 @@ class b2shareDraft():
         self.community  = communityId
         self.draftUrl   = draftUrl
         self.repoName   = 'B2SHARE'
-        self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHERS']
+        self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHER']
 
     def create(self, title):
         '''
@@ -26,22 +27,21 @@ class b2shareDraft():
         '''
         if self.draftUrl != '':
             print "Draft already created: " + self.draftUrl
-            return ['B2SHARE PUBLISH ERROR: Draft already exists: ' + self.draftUrl]
-
+            return ['B2SHARE PUBLISH INFO: Draft already exists: ' + self.draftUrl] 
         errorMsg = []
-        createUrl = self.apiUrl + "records/?access_token=" + self.apiToken
+        createUrl = self.apiUrl + "records/"
 
         #create draft
         data = '{"titles":[{"title":"'+title+'"}], "community":"' + self.community + \
             '", "open_access":true, "community_specific": {}}'
         headers = {"Content-Type":"application/json"}
-        request = requests.post(url = createUrl, headers=headers, data = data )
+        request = requests.post(url = createUrl, params = {'access_token': self.apiToken}, 
+		headers=headers, data = data )
 
         if request.status_code not in range(200, 300):
             errorMsg.append('B2SHARE PUBLISH ERROR: Draft not created: ' + str(request.status_code))
             return (errorMsg)
-        self.draftUrl = self.apiUrl + "records/" + request.json()['id'] + \
-            "/draft?access_token=" + self.apiToken
+        self.draftUrl = self.apiUrl + "records/" + request.json()['id'] + "/draft?access_token=" + self.apiToken
         self.draftId = request.json()['id']
 
     def patchGeneral(self, metadata):
@@ -126,7 +126,7 @@ class b2shareDraft():
         errorMsg = []
         r = json.loads(requests.get(self.draftUrl).text)
 
-        for f in os.listdir(localPath):
+        for f in os.listdir(folder):
             upload_files_url = r['links']['files'] + "/" + f + "?access_token=" + self.apiToken
             files = {'file' : open(folder+"/"+f, 'rb')}
             headers = {'Accept':'application/json',
@@ -135,7 +135,7 @@ class b2shareDraft():
                 headers = headers, files = files )
             if response.status_code not in range(200, 300):
                 errorMsg.append('B2SHARE PUBLISH ERROR: File not uploaded ' +
-                    localPath+"/"+f +', ' + str(request.status_code))
+                    folder+"/"+f +', ' + str(request.status_code))
 
         return errorMsg
 

@@ -1,4 +1,7 @@
 from irods.access import iRODSAccess 
+import datetime
+import shutil
+import os
 
 RED     = "\033[31m"
 GREEN   = "\033[92m"
@@ -7,37 +10,37 @@ DEFAULT = "\033[0m"
 
 class irodsRepositoryClient():
 
-    def __init__(self, irodscoll, draft, pidClient = ''):
+    def __init__(self, ipc, draft, pidClient = ''):
 
         self.draft = draft
-        self.ipc = irodspublishcoll
-        print "Publish collection: ", self.ipc.coll.path
-        print "Draft ID: ", self.draftId
-        self.pids = ipc.getMDall(self, 'PID')
-        self.tickets = ipc.getMDall(self, 'TICKET')
+        self.ipc = ipc
+        print "Publish collection: ", ipc.coll.path
+        print "Draft Url: ", self.draft.draftUrl
+        self.pids = ipc.getMDall('PID')
+        self.tickets = ipc.getMDall('TICKET')
         self.pidClient = pidClient
 
-    def checkCollection(self, pids = true, tickets = true):
+    def checkCollection(self, pids = True, tickets = True):
         
         message = []
         #Check if flat directory and no DOI from repository (unpublished)
         message.extend(self.ipc.validate(repoKeys = [self.draft.repoName + '/DOI']))
 
         #Check if mandatory metadata is present
-        if not set(self.ipc.mp.keys()).issubset(self.draft.metaKeys):
-            message.append(self.draft.repoName + ' PUBLISH ERROR: Keys not defined: ' + \
-                str(set(self.draft.metaKeys).difference(self.ipc.md.keys()))
+        if not set(self.draft.metaKeys).issubset(self.ipc.md.keys()):
+            message.append(self.draft.repoName + ' PUBLISH ERROR: Keys not defined: ')
+            message.append(str(set(self.draft.metaKeys).difference(self.ipc.md.keys())))
         else:
-            message.append(self.draft.repoName + ' PUBLISH NOTE: all metadata defined: ' +\
-                str(self.draft.metaKeys))
+            message.append(self.draft.repoName + ' PUBLISH NOTE: all metadata defined: ')
+            message.append(str(self.draft.metaKeys))
                            
         #Create PIDs, if not present
         if pids and self.pids == {}:
-            self.pids = self.ipc.assignPID(ec)
+            self.pids = self.ipc.assignPID(self.pidClient)
         message.extend(['PIDs for collection: ', str(self.pids)])
 
         #Create tickets for anonymous download of data from iRODS if not present
-        if tickets and self.ipc.tickets = {}: 
+        if tickets and self.tickets == {}: 
             self.tickets, error = self.ipc.assignTicket()
             if error:
                 message.extend(error)
@@ -70,10 +73,10 @@ class irodsRepositoryClient():
 
         message = []
         message.extend(self.draft.create(self.ipc.md['TITLE']))
-        message.extend(self.draft.patchGeneral(self.ipc.metadata))
-        if tickets != {}:
+        message.extend(self.draft.patchGeneral(self.ipc.md))
+        if self.tickets != {}:
             message.extend(self.draft.patchTickets(self.tickets))
-        if tickets != {}:
+        if self.pids != {}:
             message.extend(self.draft.patchPIDs(self.pids))
 
         if data:
@@ -94,7 +97,7 @@ class irodsRepositoryClient():
         message = []
         doi = self.draft.publish()   
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
-        message.append(self.ipc.mdUpdate(self.draft.repoName+"ID", self.draft.draftId))
+        message.append(self.ipc.mdUpdate(self.draft.repoName+'/URL', self.draft.draftUrl))
                            
         return message                   
 
@@ -107,15 +110,17 @@ class irodsRepositoryClient():
         '''
         message = '\n'.join([str(i) for i in content])
         users   = '-'.join(owners)
-        iPath   = '/'+self.ipc.session.zone+'/home/public/'+users+'_'+self.coll.name+'.status'
+        iPath   = '/'+self.ipc.session.zone+'/home/public/'+users+'_'+self.ipc.coll.name+'.status_'+str(datetime.datetime.now())
 
         try:
             obj = self.ipc.session.data_objects.create(iPath)
         except Exception:
-            obj = self.session.data_object.get(iPath)
+            obj = self.ipc.session.data_objects.get(iPath)
         with obj.open('w') as obj_desc:
             obj_desc.write(message)
 
         for user in owners:
-            acl = iRODSAccess('write', iPath, user, self.session.zone)
+            acl = iRODSAccess('write', iPath, user, self.ipc.session.zone)
             self.ipc.session.permissions.set(acl)
+        
+        return iPath

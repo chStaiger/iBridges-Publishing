@@ -23,7 +23,7 @@ collection	= '/aliceZone/home/public/b2share/myDeposit'
 #B2SHARE credentials and parameters
 apiToken        = '******************************************' 
 apiUrl          = 'https://trng-b2share.eudat.eu/api/'
-community       = '9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
+community       = 'e9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
 
 #Other parameters for publication
 maxDataSize     = 2000 # in MB
