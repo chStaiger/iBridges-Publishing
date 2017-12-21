@@ -31,6 +31,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
  
  ### Integration with B2SHARE
  - Creating a B2SHARE deposit with either only metadata or metadata and data
- - Mapping of metadata in iRODS to B2SHARE generic metadata template
+ - Mapping of metadata in iRODS to [B2SHARE generic metadata template](B2SHARE-metadata-map.md)
  - Creation of Persistent Identifiers with B2HANDLE
  - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
