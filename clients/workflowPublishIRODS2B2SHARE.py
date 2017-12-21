@@ -29,7 +29,7 @@ community       = 'e9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
 maxDataSize     = 2000 # in MB
 
 # Instantiate iRODS
-ipc = irodsPublishCollection(irodsEnvFile, colleiction)
+ipc = irodsPublishCollection(irodsEnvFile, collection)
 
 # Instantiate B2SHARE draft
 draft = b2shareDraft(apiToken, apiUrl, community)
@@ -40,14 +40,13 @@ message = ['Upload to' + draft.repoName, str(datetime.datetime.now()), collectio
 owners = ipc.close()
 
 # Validate whether to publish collection
-message.extend(ipc.validate())
 m = len(message)
+message.extend(ipc.validate(repoKeys=[draft.repoName + '/DOI']))
 if len(message) > m:
-    print RED + "Publication failed." + DEFAULT + "Data is already published."
+    print RED + "Publication failed." + DEFAULT + " Data is already published."
     message.extend(ipc.open(owners))
-    #create report
-    #TODO
-    assert false 
+    print '\n'.join([str(i) for i in message])
+    assert False 
 
 # Check if all metadata is there
 expectedKeys = draft.metaKeys
@@ -57,43 +56,37 @@ else:
     print RED + "Publication failed!" + DEFAULT + "Create report."
     message.append('PUBLISH ERROR: metadata not defined: ' + str(set(expectedKeys).difference(ipc.md.keys())))
     message.extend(ipc.open(owners))
-    #create report
-    #TODO
-    #open collection again so that users can add metadata
+    print '\n'.join([str(i) for i in message])
     assert False
 
 # According to your publishing policy assign PIDs or tickets
-pids = {}
-if 'PID' in ipc.md.keys():
-    #TODO: retrieve PIDs for collection and all data
-    pids = {}
-else:
+pids = ipc.getMDall('PID')
+if pids == {}:
     ec = '' #TODO code here to create a EUDATHandleClient from b2handle
     pids = ipc.assignPID(ec)
 message.extend(['PIDs for collection: ', str(pids)])
 print GREEN + "PIDs created." + DEFAULT
 
-tickets = {}
-if 'TICKET' in ipc.md.keys():
-    #TODO: retrieve tickets for collection and all data
-    tickets = {}
-else:
+tickets = ipc.getMDall('TICKET)
+if tickets == {}:
     tickets, error = ipc.assignTicket()
-if error:
-    message.extend(error)
-    print RED + 'Assigning tickets failed' + DEFAULT
-    message.extend(['Tickets for collection', str(tickets)])
-    assert false
-
+    if error:
+        message.extend(error)
+        print RED + 'Assigning tickets failed' + DEFAULT
+        message.extend(['Tickets for collection', str(tickets)])
+        print '\n'.join([str(i) for i in message])
+        assert false
+                       
 print GREEN + "Tickets created." + DEFAULT
 
 # Create B2SHARE draft
 out = draft.create(ipc.md['TITLE'])
-if len(out) > 0:
+if out != '':
     message.extend(out)
     #create report
     #TODO 
     print RED + "Publication failed." + DEFAULT + "Draft not created." 
+    print '\n'.join([str(i) for i in message])
     assert False
 
 message.extend(['Draft URL', draft.draftUrl, ''])
