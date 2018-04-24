@@ -45,10 +45,10 @@ for i in range(0, len(md['metadataBlocks']['citation']['fields'])):
 There are in total 31 generic metadata fields one can set. We pick some of them in the table below and sketch how to adjust them.
 
 iRODS key | value | Dataverse access 
-------|--------------|-----|-----
+------|--------------|-----
 TITLE | String | 0  title
 ABSTRACT  | String  | 7   dsDescription
-TABLEOFCONTENTS |Ticket: <ticket> |  4 	otherId
+TABLEOFCONTENTS |iRODS Ticket or PID to iRODS data |  4 	otherId
 TECHNICALINFO |{"irods_host": "", "irods_port": 1247, "irods_user_name": "anonymous", "irods_zone_name": ""}; iget/ils -t \<ticket\> \<path\>|27 	software
 OTHER | http endpoint for iRODS, e.g. Metalnx | 3 alternativeURL
   | |
