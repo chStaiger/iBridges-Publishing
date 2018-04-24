@@ -56,4 +56,13 @@ CREATOR | Surname, First name  | 5 	author
   | |
 PID | http://hdl.handle.net/<PID\> | 29 	otherReferences
 TICKET  |  String, \<ticket\>, \<path\> | 29 	otherReferences
+SUBJECT | controlled vocabulary | 8 	subject
 
+Dataverse asks for a metadata item called "Subject" which comes from a controlled vocabulary:
+```
+Agricultural Sciences; Arts and Humanities; Astronomy and Astrophysics; 
+Business and Management; Chemistry; Computer and Information Science; 
+Earth and Environmental Sciences; Engineering; Law; Mathematical Sciences; 
+Medicine, Health and Life Sciences; Physics; Social Sciences; Other
+```
+If not defined we will set it to "Other".
