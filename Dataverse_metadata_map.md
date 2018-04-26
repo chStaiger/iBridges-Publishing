@@ -49,7 +49,7 @@ iRODS key | value | Dataverse access
 TITLE | String | 0  title
 ABSTRACT  | String  | 7   dsDescription
 TABLEOFCONTENTS |iRODS Ticket or PID to iRODS data |  4 	otherId
-TECHNICALINFO |{"irods_host": "", "irods_port": 1247, "irods_user_name": "anonymous", "irods_zone_name": ""}; iget/ils -t \<ticket\> \<path\>|27 	software
+TECHNICALINFO |{"irods_host": "", "irods_port": 1247, "irods_user_name": "anonymous", "irods_zone_name": ""}; iget/ils -t \<ticket\> \<path\>|27 	dataSources
 OTHER | http endpoint for iRODS, e.g. Metalnx | 3 alternativeURL
   | |
 CREATOR | Surname, First name  | 5 	author
