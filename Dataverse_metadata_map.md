@@ -48,14 +48,14 @@ iRODS key | value | Dataverse access
 ------|--------------|-----
 TITLE | String | 0  title
 ABSTRACT  | String  | 7   dsDescription
-TABLEOFCONTENTS |iRODS Ticket or PID to iRODS data |  4 	otherId
+PID/TICKET for collection |iRODS Ticket or PID to iRODS data |  4 	otherId
 TECHNICALINFO |{"irods_host": "", "irods_port": 1247, "irods_user_name": "anonymous", "irods_zone_name": ""}; iget/ils -t \<ticket\> \<path\>|27 	dataSources
 OTHER | http endpoint for iRODS, e.g. Metalnx | 3 alternativeURL
   | |
 CREATOR | Surname, First name  | 5 	author
   | |
-PID | http://hdl.handle.net/<PID\> | 29 	otherReferences
-TICKET  |  String, \<ticket\>, \<path\> | 29 	otherReferences
+Data PIDs | http://hdl.handle.net/<PID\> | 29 	otherReferences
+Data TICKETs  |  String, \<ticket\>, \<path\> | 29 	otherReferences
 SUBJECT | controlled vocabulary | 8 	subject
 
 Dataverse asks for a metadata item called "Subject" which comes from a controlled vocabulary:
