@@ -40,4 +40,4 @@ Unless required by applicable law or agreed to in writing, software distributed 
  - Mapping of metadata in iRODS to [Dataverse citation metadata template](Dataverse_metadata_map.md)
  - Creation of Persistent Identifiers with B2HANDLE [TODO]
  - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
- - NOTE: No dataverse publication, since Dataverse offers a nice userinterface for draft data and aloready assigns PIDs to drafts, we skip that part in the client.
+ - NOTE: Dataverse offers a nice user interface for data in draft state and already assigns PIDs to drafts, hence we skip that publishing part in the client and leave it to the user.
