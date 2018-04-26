@@ -10,12 +10,13 @@ The folder clients contains the classes and workflows for publishing data from i
  user 'anonymous' without password and with read access to the respective data collections i iRODS.
 
 ### B2SHARE
-- You need an account and API token for the instance https://trng-b2share.eudat.eu/
+You need an account and API token for the instance https://trng-b2share.eudat.eu/
 
 ### Dataverse
 - You need access to a demo instance and create token there:
- * https://demo.dataverse.nl/
- * https://demo.dataverse.org/
+  - https://demo.dataverse.nl/
+  - https://demo.dataverse.org/
+- Or you can install an [own instance](Dataverse%20Installation.pdf).
 
 ### EPIC PIDs
 To connect to the handle server you need
@@ -25,7 +26,6 @@ To connect to the handle server you need
  ```sh
  {
     "handle_server_url": "https://epic4.storage.surfsara.nl:8007",
-    "baseuri": "https://epic4.storage.surfsara.nl:8007",
     "private_key": "<full/path/to/privkey.pem>",
     "certificate_only": "<full/path/to/certificate_only.pem>",
     "prefix": "21.T12995",
