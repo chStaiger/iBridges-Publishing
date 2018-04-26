@@ -8,6 +8,7 @@
 
 from irodsPublishCollection import irodsPublishCollection
 from b2shareDraft import b2shareDraft
+from dataverseDraft import dataverseDraft
 from irodsRepositoryClient import irodsRepositoryClient
 
 import datetime
@@ -19,7 +20,7 @@ DEFAULT = "\033[0m"
 
 
 #iRODS credentials and parameters
-irodsEnvFile    = '' # .irods/irodsenviroment.json; if empty user b2share, password will be asked
+irodsEnvFile    = '' # .irods/irodsenviroment.json; if empty user password will be asked
 collection	= '/aliceZone/home/public/b2share/myDeposit'
 
 #B2SHARE credentials and parameters
@@ -27,14 +28,22 @@ apiToken        = '******************************************'
 apiUrl          = 'https://trng-b2share.eudat.eu/api/'
 community       = 'e9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
 
+#Dataverse credentials and parameters
+apiToken        = '******************************************'
+apiUrl 	        = 'http://demo.dataverse.nl/'
+alias           = 'a64b880c-408b-11e8-a58f-040091643b8b'
+
 #Other parameters for publication
 maxDataSize     = 2000 # in MB
 
 # Instantiate iRODS
-ipc = irodsPublishCollection(irodsEnvFile, collection)
 
-# Instantiate B2SHARE draft
+ipc = irodsPublishCollection(irodsEnvFile, collection, host = 'ibridges', 
+                             user = 'ibridges', zone = 'ibridgesZone')
+
+# Instantiate draft
 draft = b2shareDraft(apiToken, apiUrl, community)
+draft = dataverseDraft(apiToken, apiUrl, alias)
 
 # Instantiate client
 publishclient = irodsRepositoryClient(ipc, draft)
@@ -63,11 +72,11 @@ print "Check report: "
 print '\n'.join([str(i) for i in message])
 print
 
-# Create B2SHARE draft
+# Create draft
 print GREEN + 'Create repository draft.'
 
 out = publishclient.draft.create(publishclient.ipc.md['TITLE'])
-if len(out) > 0:
+if out != None:
     message.extend(out)
     print 'Create report: ' + publishclient.createReport(message, owners)
     print RED + "Publication failed." + DEFAULT + "Draft not created." 

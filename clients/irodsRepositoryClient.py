@@ -72,13 +72,18 @@ class irodsRepositoryClient():
     def uploadToRepo(self, data=True):
 
         message = []
-        message.extend(self.draft.create(self.ipc.md['TITLE']))
+        #message.extend(self.draft.create(self.ipc.md['TITLE']))
         message.extend(self.draft.patchGeneral(self.ipc.md))
         if self.tickets != {}:
-            message.extend(self.draft.patchTickets(self.tickets))
+            try:
+                message.extend(self.draft.patchTickets(self.tickets))
+            except:
+                message.extend(self.draft.patchRefs(self.tickets))
         if self.pids != {}:
-            message.extend(self.draft.patchPIDs(self.pids))
-
+            try:
+                message.extend(self.draft.patchPIDs(self.pids))
+            except:
+                message.extend(self.draft.patchRefs(self.pids))
         if data:
             folder = self.localCopyData()
             message.extend(self.draft.uploadData(folder))        
@@ -95,8 +100,12 @@ class irodsRepositoryClient():
         assert self.draft.draftUrl != ''
         
         message = []
-        doi = self.draft.publish()   
-        message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
+        try: #B2SHARE
+            doi = self.draft.publish()  
+            message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
+        except: #Dataverse
+            doi = self.draft.getDoi() 
+            message.append(self.ipc.mdUpdate(self.draft.repoName, doi))
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/URL', self.draft.draftUrl))
                            
         return message                   
