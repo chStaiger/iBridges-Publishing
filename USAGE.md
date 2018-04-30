@@ -86,7 +86,7 @@ Note: If you do not have a Handle prefix, uuids will be created for the data.
  - [workflowPublish.py](clients/workflowPublish.py) more convenient example; uses the irodsRepositoryClient to abstract from single tasks in the publishing proccess (works for B2SHARE and Dataverse)
  
 - [workflowPublishClt.py](clients/workflowPublishClt.py): 
- You will need to prepare the [parameters.json](clients/parameters_template.json).
+ You will need to prepare the [parameters.json](parameters_template.json).
  Run the whole publication workflow by starting:
  
   ```sh
