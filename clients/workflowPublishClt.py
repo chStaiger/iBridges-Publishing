@@ -21,7 +21,7 @@ BLUE    = "\033[34m"
 DEFAULT = "\033[0m"
 
 # Load credentials and parameters for iRODS and the repository
-parameters =  json.load(open('parameters.json'))
+parameters =  json.load(open('../parameters.json'))
 print BLUE, "Parameters: "
 pprint.pprint(parameters)
 print DEFAULT
