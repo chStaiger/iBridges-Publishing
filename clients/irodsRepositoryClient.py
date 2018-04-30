@@ -78,7 +78,7 @@ class irodsRepositoryClient():
             try:
                 message.extend(self.draft.patchTickets(self.tickets))
             except:
-                message.extend(self.draft.patchRefs(self.tickets))
+                message.extend(self.draft.patchRefs(self.tickets, 'Ticket: '))
         if self.pids != {}:
             try:
                 message.extend(self.draft.patchPIDs(self.pids))
@@ -102,10 +102,9 @@ class irodsRepositoryClient():
         message = []
         try: #B2SHARE
             doi = self.draft.publish()  
-            message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
         except: #Dataverse
-            doi = self.draft.getDoi() 
-            message.append(self.ipc.mdUpdate(self.draft.repoName, doi))
+            doi = self.draft.getDOI() 
+        message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/URL', self.draft.draftUrl))
                            
         return message                   
@@ -119,7 +118,7 @@ class irodsRepositoryClient():
         '''
         message = '\n'.join([str(i) for i in content])
         users   = '-'.join(owners)
-        iPath   = '/'+self.ipc.session.zone+'/home/public/'+users+'_'+self.ipc.coll.name+'.status_'+str(datetime.datetime.now())
+        iPath   = '/'+self.ipc.session.zone+'/home/public/'+users+'_'+self.ipc.coll.name+'.status_'+datetime.datetime.now().strftime('%d-%m-%y_%H:%M')
 
         try:
             obj = self.ipc.session.data_objects.create(iPath)

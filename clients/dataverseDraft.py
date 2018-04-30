@@ -130,7 +130,7 @@ class dataverseDraft():
 
         try:
             self.__dataset.update_metadata(curMeta)
-            errorMsg.append('Dataverse PUBLISH INFO: Draft patched with refs: '+str(refs)')
+            errorMsg.append('Dataverse PUBLISH INFO: Draft patched with refs: '+str(refs))
         except:
             errorMsg.append('Dataverse PUBLISH ERROR: Draft not patched with data references.')
         return errorMsg
