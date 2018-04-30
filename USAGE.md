@@ -84,3 +84,11 @@ Note: If you do not have a Handle prefix, uuids will be created for the data.
  - [workflowPublishIRODS2B2SHARE.py](clients/workflowPublishIRODS2B2SHARE.py): You only need the class for the iRODS collection and the draft
  - [workflowPublishIRODS2B2SHARE.py](clients/workflowPublishDataverse.py): You only need the class for the iRODS collection and the draft
  - [workflowPublish.py](clients/workflowPublish.py) more convenient example; uses the irodsRepositoryClient to abstract from single tasks in the publishing proccess (works for B2SHARE and Dataverse)
+ 
+- [workflowPublishClt.py](clients/workflowPublishClt.py): 
+ You will need to prepare the [parameters.json](clients/parameters_template.json).
+ Run the whole publication workflow by starting:
+ 
+  ```sh
+  python workflowPublishClt.py
+  ```
