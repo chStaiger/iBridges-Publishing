@@ -19,7 +19,7 @@ class b2shareDraft():
         self.community  = communityId
         self.draftUrl   = draftUrl
         self.repoName   = 'B2SHARE'
-        self.metaKeys   = ['CREATOR', 'TITLE', 'TABLEOFCONTENTS', 'SERIESINFORMATION', 'TECHNICALINFO', 'OTHER']
+        self.metaKeys   = ['CREATOR', 'TITLE', 'SERIESINFORMATION', 'OTHER']
 
     def create(self, title):
         '''
@@ -71,13 +71,20 @@ class b2shareDraft():
         patch = '[{"op":"add","path":"/descriptions","value":[{"description":"'+ metadata['ABSTRACT'] + \
             '", "description_type":"Abstract"},{"description":"'+ metadata['OTHER'] + \
             '", "description_type":"Other"},{"description":"'+metadata['SERIESINFORMATION'] + \
-            '", "description_type":"SeriesInformation"}, {"description":"Ticket: '+metadata['TABLEOFCONTENTS'] + \
-            '", "description_type":"TableOfContents"},{"description":"'+metadata['TECHNICALINFO'] + \
-            '", "description_type":"TechnicalInfo"}]}]'
+            '", "description_type":"SeriesInformation"}, {"description":"Ticket: '+metadata['TICKET'] + \
+            '", "description_type":"TableOfContents"}]}]'
         response = requests.patch(url=self.draftUrl, headers=headers, data=patch)
         if response.status_code not in range(200, 300):
             errorMsg.append('B2SHARE PUBLISH ERROR: Draft not patched with description. ' + \
             str(response.status_code))
+
+#        patch = '[{"op":"add","path":"/descriptions","value":[{"description":"'+metadata['TECHNICALINFO'] + \
+#            '", "description_type":"TechnicalInfo"}]}]'
+#        response = requests.patch(url=self.draftUrl, headers=headers, data=patch)
+#        if response.status_code not in range(200, 300):
+#            errorMsg.append('B2SHARE PUBLISH ERROR: Draft not patched with TECHNICALINFO. ' + \
+#            str(response.status_code))
+
         print "added description"
 
         return errorMsg

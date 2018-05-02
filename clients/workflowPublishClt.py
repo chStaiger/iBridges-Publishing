@@ -14,6 +14,7 @@ from irodsRepositoryClient import irodsRepositoryClient
 import datetime
 import json
 import pprint
+import sys
 
 RED     = "\033[31m"
 GREEN   = "\033[92m"
@@ -21,10 +22,17 @@ BLUE    = "\033[34m"
 DEFAULT = "\033[0m"
 
 # Load credentials and parameters for iRODS and the repository
-parameters =  json.load(open('../parameters.json'))
+choice = input("Parameters file:")
+parameters =  json.load(open(choice))
 print BLUE, "Parameters: "
 pprint.pprint(parameters)
 print DEFAULT
+
+print "Current collection:", parameters['collection'] 
+choice = input("Change collection?\n")
+
+if choice != "":
+    parameters['collection'] = choice
 
 #Other parameters for publication
 maxDataSize     = 2000 # in MB
@@ -45,7 +53,7 @@ elif choice == 2:
     draft = dataverseDraft(parameters['apiToken'], parameters['apiUrl'], parameters['community'])
 else:
     print RED, "Invalid input", DEFAULT
-    assert False
+    sys.exit("Input error")
 
 print draft.repoName
 
@@ -61,13 +69,18 @@ message.append('OWNERS :' + str(owners))
 print GREEN + 'Validate collection, create PIDs and Tickets.'
 message.extend(publishclient.checkCollection())
 
+if 'PUBLISH ERROR: Data is already published.' in message:
+    print RED + "Data already published " + DEFAULT + publishclient.ipc.md[draft.repoName+"/URL"] 
+    print 'Create report: ' + publishclient.createReport(message, owners)
+    sys.exit("Publication error")
+
 if any(item.startswith(publishclient.draft.repoName + ' PUBLISH ERROR') for item in message) or \
     any(item.startswith('PUBLISH ERROR') for item in message):
 
     print RED + 'VALIDTION ERROR' + DEFAULT
     message.extend(publishclient.ipc.open(owners))
     print 'Create report: ' + publishclient.createReport(message, owners)    
-    assert False
+    sys.exit("Metadata validation error")
 
 print GREEN + "PIDs created." + DEFAULT
 print GREEN + "Tickets created." + DEFAULT
@@ -84,7 +97,7 @@ if out != None:
     message.extend(out)
     print 'Create report: ' + publishclient.createReport(message, owners)
     print RED + "Publication failed." + DEFAULT + "Draft not created." 
-    assert False
+    sys.exit("Data and metadata upload error")
 
 print GREEN + 'Patch with metadata and data' + DEFAULT
 message.extend(['Draft URL', publishclient.draft.draftUrl, ''])
