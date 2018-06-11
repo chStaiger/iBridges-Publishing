@@ -72,13 +72,18 @@ class irodsRepositoryClient():
     def uploadToRepo(self, data=True):
 
         message = []
-        message.extend(self.draft.create(self.ipc.md['TITLE']))
+        #message.extend(self.draft.create(self.ipc.md['TITLE']))
         message.extend(self.draft.patchGeneral(self.ipc.md))
         if self.tickets != {}:
-            message.extend(self.draft.patchTickets(self.tickets))
+            try:
+                message.extend(self.draft.patchTickets(self.tickets))
+            except:
+                message.extend(self.draft.patchRefs(self.tickets, 'Ticket: '))
         if self.pids != {}:
-            message.extend(self.draft.patchPIDs(self.pids))
-
+            try:
+                message.extend(self.draft.patchPIDs(self.pids))
+            except:
+                message.extend(self.draft.patchRefs(self.pids))
         if data:
             folder = self.localCopyData()
             message.extend(self.draft.uploadData(folder))        
@@ -95,7 +100,10 @@ class irodsRepositoryClient():
         assert self.draft.draftUrl != ''
         
         message = []
-        doi = self.draft.publish()   
+        try: #B2SHARE
+            doi = self.draft.publish()  
+        except: #Dataverse
+            doi = self.draft.getDOI() 
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/URL', self.draft.draftUrl))
                            
@@ -110,7 +118,7 @@ class irodsRepositoryClient():
         '''
         message = '\n'.join([str(i) for i in content])
         users   = '-'.join(owners)
-        iPath   = '/'+self.ipc.session.zone+'/home/public/'+users+'_'+self.ipc.coll.name+'.status_'+str(datetime.datetime.now())
+        iPath   = '/'+self.ipc.session.zone+'/home/public/'+users+'_'+self.ipc.coll.name+'.status_'+datetime.datetime.now().strftime('%d-%m-%y_%H:%M')
 
         try:
             obj = self.ipc.session.data_objects.create(iPath)

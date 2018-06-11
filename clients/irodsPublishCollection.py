@@ -22,12 +22,13 @@ import getpass
 import uuid
 
 class irodsPublishCollection():
-    def __init__(self, envFile, collPath):
+    def __init__(self, envFile, collPath, host='ibridges', user='data', zone='myZone'):
         if envFile == '':
             #workaround for testing and when icommands not available
+            print 'irods ', host, 'user ', user, 'zone', zone
             pw = getpass.getpass().encode('base64')
-            self.session = iRODSSession(host='alice-centos', port=1247, user='b2share',
-                password=pw.decode('base64'), zone='aliceZone')
+            self.session = iRODSSession(host=host, port=1247, user=user,
+                password=pw.decode('base64'), zone=zone)
         else:
             self.session = iRODSSession(irods_env_file=envFile)
         self.coll   = self.session.collections.get(collPath)

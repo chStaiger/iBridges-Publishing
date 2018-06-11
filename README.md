@@ -32,5 +32,12 @@ Unless required by applicable law or agreed to in writing, software distributed 
  ### Integration with B2SHARE
  - Creating a B2SHARE deposit with either only metadata or metadata and data
  - Mapping of metadata in iRODS to [B2SHARE generic metadata template](B2SHARE-metadata-map.md)
- - Creation of Persistent Identifiers with B2HANDLE
+ - Creation of Persistent Identifiers with B2HANDLE [TODO]
  - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
+ 
+  ### Integration with Dataverse
+ - Creating a Dataverse draft with either only metadata or metadata and data
+ - Mapping of metadata in iRODS to [Dataverse citation metadata template](Dataverse_metadata_map.md)
+ - Creation of Persistent Identifiers with B2HANDLE [TODO]
+ - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
+ - NOTE: Dataverse offers a nice user interface for data in draft state and already assigns PIDs to drafts, hence we skip that publishing part in the client and leave it to the user.

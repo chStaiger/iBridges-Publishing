@@ -2,7 +2,7 @@
 
 """
 @licence: Apache 2.0
-@Copyright (c) 2017, Christine Staiger (SURFsara)
+@Copyright (c) 2018, Christine Staiger (SURFsara)
 @author: Christine Staiger
 """
 
@@ -12,42 +12,54 @@ from dataverseDraft import dataverseDraft
 from irodsRepositoryClient import irodsRepositoryClient
 
 import datetime
+import json
+import pprint
+import sys
 
 RED     = "\033[31m"
 GREEN   = "\033[92m"
 BLUE    = "\033[34m"
 DEFAULT = "\033[0m"
 
+# Load credentials and parameters for iRODS and the repository
+choice = input("Parameters file:")
+parameters =  json.load(open(choice))
+print BLUE, "Parameters: "
+pprint.pprint(parameters)
+print DEFAULT
 
-#iRODS credentials and parameters
-irodsEnvFile    = '' # .irods/irodsenviroment.json; if empty user password will be asked
-collection	= '/aliceZone/home/public/b2share/myDeposit'
+print "Current collection:", parameters['collection'] 
+choice = input("Change collection?\n")
 
-#B2SHARE credentials and parameters
-apiToken        = '******************************************' 
-apiUrl          = 'https://trng-b2share.eudat.eu/api/'
-community       = 'e9b9792e-79fb-4b07-b6b4-b9c2bd06d095'
-
-#Dataverse credentials and parameters
-apiToken        = '******************************************'
-apiUrl 	        = 'http://demo.dataverse.nl/'
-alias           = 'a64b880c-408b-11e8-a58f-040091643b8b'
+if choice != "":
+    parameters['collection'] = choice
 
 #Other parameters for publication
 maxDataSize     = 2000 # in MB
 
 # Instantiate iRODS
 
-ipc = irodsPublishCollection(irodsEnvFile, collection, host = 'ibridges', 
-                             user = 'ibridges', zone = 'ibridgesZone')
+ipc = irodsPublishCollection(parameters['irodsEnvFile'], 
+			     parameters['collection'], 
+			     parameters['host'], 
+			     parameters['user'], 
+   			     parameters['zone'])
 
 # Instantiate draft
-draft = b2shareDraft(apiToken, apiUrl, community)
-draft = dataverseDraft(apiToken, apiUrl, alias)
+choice = input("[1]: B2SHARE \n[2]: Dataverse\n")
+if choice == 1:
+    draft = b2shareDraft(parameters['apiToken'], parameters['apiUrl'], parameters['community'])
+elif choice == 2:
+    draft = dataverseDraft(parameters['apiToken'], parameters['apiUrl'], parameters['community'])
+else:
+    print RED, "Invalid input", DEFAULT
+    sys.exit("Input error")
+
+print draft.repoName
 
 # Instantiate client
 publishclient = irodsRepositoryClient(ipc, draft)
-message = ['Upload to' + draft.repoName, str(datetime.datetime.now()), collection, '']
+message = ['Upload to' + draft.repoName, str(datetime.datetime.now()), parameters['collection'], '']
 
 # Change ACLs for users to read only
 owners = ipc.close()
@@ -57,13 +69,18 @@ message.append('OWNERS :' + str(owners))
 print GREEN + 'Validate collection, create PIDs and Tickets.'
 message.extend(publishclient.checkCollection())
 
+if 'PUBLISH ERROR: Data is already published.' in message:
+    print RED + "Data already published " + DEFAULT + publishclient.ipc.md[draft.repoName+"/URL"] 
+    print 'Create report: ' + publishclient.createReport(message, owners)
+    sys.exit("Publication error")
+
 if any(item.startswith(publishclient.draft.repoName + ' PUBLISH ERROR') for item in message) or \
     any(item.startswith('PUBLISH ERROR') for item in message):
 
     print RED + 'VALIDTION ERROR' + DEFAULT
     message.extend(publishclient.ipc.open(owners))
     print 'Create report: ' + publishclient.createReport(message, owners)    
-    assert False
+    sys.exit("Metadata validation error")
 
 print GREEN + "PIDs created." + DEFAULT
 print GREEN + "Tickets created." + DEFAULT
@@ -80,7 +97,7 @@ if out != None:
     message.extend(out)
     print 'Create report: ' + publishclient.createReport(message, owners)
     print RED + "Publication failed." + DEFAULT + "Draft not created." 
-    assert False
+    sys.exit("Data and metadata upload error")
 
 print GREEN + 'Patch with metadata and data' + DEFAULT
 message.extend(['Draft URL', publishclient.draft.draftUrl, ''])

@@ -1,0 +1,8 @@
+{"apiToken": "**********************",
+ "apiUrl": "B2SHARE api URL or Dataverse URL",
+ "collection": "iRODS collection to publish",
+ "community": "B2SHARE community ID or Dataverse alias",
+ "host": "iRODS host",
+ "irodsEnvFile": "path to irods environment file, leave empty if authenticating by user name",
+ "user": "iRODS user",
+ "zone": "iRODS zone"}
