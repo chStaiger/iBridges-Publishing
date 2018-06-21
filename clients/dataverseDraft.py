@@ -100,7 +100,7 @@ class dataverseDraft():
         curMeta['metadataBlocks']['citation']['fields'].append(new)
 
         if 'PID' in metadata:
-            new = self.addAltID('hdl.handle.net/', metadata['PID'])
+            new = self.addAltID('Handle', 'hdl.handle.net/'+metadata['PID'])
             curMeta['metadataBlocks']['citation']['fields'].append(new)
 
         if 'TICKET' in metadata:

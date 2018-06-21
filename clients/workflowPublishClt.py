@@ -29,7 +29,7 @@ pprint.pprint(parameters)
 print DEFAULT
 
 print "Current collection:", parameters['collection'] 
-choice = input("Change collection?\n")
+choice = input("Change collection?(\"\"/\"path\")\n")
 
 if choice != "":
     parameters['collection'] = choice
