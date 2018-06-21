@@ -73,7 +73,7 @@ class irodsRepositoryClient():
 
         message = []
         #message.extend(self.draft.create(self.ipc.md['TITLE']))
-        message.extend(self.draft.patchGeneral(self.ipc.md))
+        message.extend(self.draft.patchGeneral(self.ipc.md, collPath = self.ipc.coll.path))
         if self.tickets != {}:
             try:
                 message.extend(self.draft.patchTickets(self.tickets))
