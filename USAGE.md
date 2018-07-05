@@ -7,7 +7,17 @@ The folder clients contains the classes and workflows for publishing data from i
 ### iRODS
 - irods user who has read/write access to the designated publish collections in iRODS
 - If you want to use tickets to refer to data in iRODS, you need to create an iRODS 
- user 'anonymous' without password and with read access to the respective data collections i iRODS.
+ user 'anonymous' without password and with read access to the respective data collections in iRODS.
+- In general you need those collections with the respective ACL settings:
+
+  ```sh
+ iadmin mkuser anonymous rodsuser
+ ichmod write public /ibridgesZone/home/public/B2SHARE
+ ichmod write public /ibridgesZone/home/public/Dataverse
+ ichmod -r read anonymous /ibridgesZone/home/public
+ ichmod inherit /ibridgesZone/home/public/B2SHARE
+ ichmod inherit /ibridgesZone/home/public/Dataverse
+ ```
 
 ### B2SHARE
 You need an account and API token for the instance https://trng-b2share.eudat.eu/
