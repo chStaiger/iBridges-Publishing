@@ -24,14 +24,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
 - iRODS instance
   - iRODS 4.1.10 or 4.2.1
   - Rodsuser 'anonymous' with read rights to /zone/home/public/<repo_name> 
- ```sh
- iadmin mkuser anonymous rodsuser
- ichmod write public /ibridgesZone/home/public/B2SHARE
- ichmod write public /ibridgesZone/home/public/Dataverse
- ichmod -r read anonymous /ibridgesZone/home/public
- ichmod inherit /ibridgesZone/home/public/B2SHARE
- ichmod inherit /ibridgesZone/home/public/Dataverse
- ```
   
  ## Features
  ### iRODS functionality
