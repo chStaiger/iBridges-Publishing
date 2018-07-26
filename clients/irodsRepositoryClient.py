@@ -73,7 +73,10 @@ class irodsRepositoryClient():
 
         message = []
         #message.extend(self.draft.create(self.ipc.md['TITLE']))
-        message.extend(self.draft.patchGeneral(self.ipc.md, collPath = self.ipc.coll.path))
+        if self.ipc.http != '':
+            message.extend(self.draft.patchGeneral(self.ipc.md, collPath = self.ipc.http + self.ipc.coll.path))
+        else:
+            message.extend(self.draft.patchGeneral(self.ipc.md, collPath = self.ipc.coll.path))
         if self.tickets != {}:
             try:
                 message.extend(self.draft.patchTickets(self.tickets))
@@ -100,10 +103,12 @@ class irodsRepositoryClient():
         assert self.draft.draftUrl != ''
         
         message = []
-        try: #B2SHARE
+        if self.draft.repoName == 'B2SHARE':
             doi = self.draft.publish()  
-        except: #Dataverse
+        elif self.draft.repoName == 'Dataverse':
             doi = self.draft.getDOI() 
+        elif self.draft.repoName == 'CKAN':
+            doi = self.draft.ckanID
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/DOI', doi))
         message.append(self.ipc.mdUpdate(self.draft.repoName+'/URL', self.draft.draftUrl))
                            

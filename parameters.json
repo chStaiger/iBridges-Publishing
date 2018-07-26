@@ -1,0 +1,10 @@
+{"apiToken": "b18278c7-a6ad-46cf-8673-95b6aac6c715",
+ "apiUrl": "145.100.59.118:8080",
+ "collection": "/ibridgesZone/home/public/dataverse/AliceInWonderland",
+ "community": "demoverse",
+ "group": "optional CKAN group, leave empty if not used",
+ "host": "ibridges",
+ "http": "http endpoint, leave empty if not used",
+ "irodsEnvFile": "path to irods environment file, leave empty if authenticating by user name",
+ "user": "ibridges",
+ "zone": "ibridgesZone"}

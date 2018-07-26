@@ -9,6 +9,7 @@
 from irodsPublishCollection import irodsPublishCollection
 from b2shareDraft import b2shareDraft
 from dataverseDraft import dataverseDraft
+from ckanDraft import ckanDraft
 from irodsRepositoryClient import irodsRepositoryClient
 
 import datetime
@@ -40,17 +41,21 @@ maxDataSize     = 2000 # in MB
 # Instantiate iRODS
 
 ipc = irodsPublishCollection(parameters['irodsEnvFile'], 
-			     parameters['collection'], 
-			     parameters['host'], 
-			     parameters['user'], 
-   			     parameters['zone'])
+			    parameters['collection'], 
+			    parameters['host'], 
+			    parameters['user'], 
+   			    parameters['zone'], 
+                httpEndpoint = parameters['http']
+)
 
 # Instantiate draft
-choice = input("[1]: B2SHARE \n[2]: Dataverse\n")
+choice = input("[1]: B2SHARE \n[2]: Dataverse \n[3] CKAN (metadata only)\n")
 if choice == 1:
     draft = b2shareDraft(parameters['apiToken'], parameters['apiUrl'], parameters['community'])
 elif choice == 2:
     draft = dataverseDraft(parameters['apiToken'], parameters['apiUrl'], parameters['community'])
+elif choice == 3:
+    draft = ckanDraft(parameters['apiToken'], parameters['apiUrl'], parameters['community'], ckanGroup = parameters['group'])
 else:
     print RED, "Invalid input", DEFAULT
     sys.exit("Input error")
@@ -59,7 +64,7 @@ print draft.repoName
 
 # Instantiate client
 publishclient = irodsRepositoryClient(ipc, draft)
-message = ['Upload to' + draft.repoName, str(datetime.datetime.now()), parameters['collection'], '']
+message = ['Upload to ' + draft.repoName, str(datetime.datetime.now()), parameters['collection'], '']
 
 # Change ACLs for users to read only
 owners = ipc.close()
@@ -101,7 +106,10 @@ if out != None:
 
 print GREEN + 'Patch with metadata and data' + DEFAULT
 message.extend(['Draft URL', publishclient.draft.draftUrl, ''])
-message.extend(publishclient.uploadToRepo(data = publishclient.ipc.size()/1000. < maxDataSize))
+if publishclient.draft.repoName == 'CKAN':
+    message.extend(publishclient.uploadToRepo(data = False))
+else:
+    message.extend(publishclient.uploadToRepo(data = publishclient.ipc.size()/1000. < maxDataSize))
 if any(item.startswith(publishclient.draft.repoName + ' PUBLISH ERROR') for item in message):
     print 'Create report: ' + publishclient.createReport(message, owners)
     print RED + 'Metadata/data upload failed'
