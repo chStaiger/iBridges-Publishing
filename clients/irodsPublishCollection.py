@@ -22,7 +22,7 @@ import getpass
 import uuid
 
 class irodsPublishCollection():
-    def __init__(self, envFile, collPath, host='ibridges', user='data', zone='myZone'):
+    def __init__(self, envFile, collPath, host='ibridges', user='data', zone='myZone', httpEndpoint=''):
         if envFile == '':
             #workaround for testing and when icommands not available
             print 'irods ', host, 'user ', user, 'zone', zone
@@ -34,6 +34,7 @@ class irodsPublishCollection():
         self.coll   = self.session.collections.get(collPath)
         self.mdUpdate('SERIESINFORMATION', 'iRODS Collection '+ self.coll.path)
         self.md     = self.mdGet()
+        self.http   = httpEndpoint # http or davrods endpoint
 
     def size(self):
         size = sum([obj.size for obj in self.coll.data_objects])

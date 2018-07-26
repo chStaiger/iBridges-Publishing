@@ -34,10 +34,21 @@ Unless required by applicable law or agreed to in writing, software distributed 
  - Mapping of metadata in iRODS to [B2SHARE generic metadata template](B2SHARE-metadata-map.md)
  - Creation of Persistent Identifiers with B2HANDLE [TODO]
  - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
+ - If HTTP endpoint or Davrods endpoint is given, data is made accessible to user davrods and anonymous
  
   ### Integration with Dataverse
  - Creating a Dataverse draft with either only metadata or metadata and data
  - Mapping of metadata in iRODS to [Dataverse citation metadata template](Dataverse_metadata_map.md)
  - Creation of Persistent Identifiers with B2HANDLE [TODO]
  - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
+ - If HTTP endpoint or Davrods endpoint is given, data is made accessible to user davrods and anonymous
  - NOTE: Dataverse offers a nice user interface for data in draft state and already assigns PIDs to drafts, hence we skip that publishing part in the client and leave it to the user.
+
+  ### Integration CKAN
+ - Creating a CKAN package containing only metadata
+ - Mapping of metadata in iRODS to [Dataverse citation metadata template](CKAN_metadata_map.md)
+ - Creation of Persistent Identifiers with B2HANDLE [TODO]
+ - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
+ - If HTTP endpoint or Davrods endpoint is given, data is made accessible to user davrods and anonymous
+ - NOTE: Metadata is publicly available directly publicly available, i.e. there is no draft phase in CKAN
+
