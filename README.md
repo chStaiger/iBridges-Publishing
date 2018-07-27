@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
   ### Integration CKAN
  - Creating a CKAN package containing only metadata
- - Mapping of metadata in iRODS to [Dataverse citation metadata template](CKAN_metadata_map.md)
+ - Mapping of metadata in iRODS to [CKAN citation metadata template](CKAN-metadata-map.md)
  - Creation of Persistent Identifiers with B2HANDLE [TODO]
  - Linking to data in iRODS by Persistent Identifiers or by iRODS Tickets
  - If HTTP endpoint or Davrods endpoint is given, data is made accessible to user davrods and anonymous
