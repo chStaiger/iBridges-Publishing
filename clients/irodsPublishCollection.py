@@ -118,7 +118,7 @@ class irodsPublishCollection():
         if all:
             for obj in self.coll.data_objects:
                 pid = str(uuid.uuid1())
-                obj.metadata.add("PID", pid)
+                obj.metadata.add("IRODS/PID", pid)
                 pids[obj.name] = pid
 
         return pids
