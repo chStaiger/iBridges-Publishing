@@ -87,13 +87,13 @@ class dataverseDraft():
             curMeta['metadataBlocks']['citation']['fields'].append(new)
       
         # OTHER --> alternativeURL
-        if 'OTHER' in metadata:
-            new = {u'multiple': False,
-               u'typeClass': u'primitive',
-               u'typeName': u'alternativeURL',
-               u'value': u'http://myalturi.nl'}
-            new['value'] = metadata['OTHER']
-            curMeta['metadataBlocks']['citation']['fields'].append(new)
+        #if 'OTHER' in metadata:
+        #    new = {u'multiple': False,
+        #       u'typeClass': u'primitive',
+        #       u'typeName': u'alternativeURL',
+        #       u'value': u'http://myalturi.nl'}
+        #    new['value'] = metadata['OTHER']
+        #    curMeta['metadataBlocks']['citation']['fields'].append(new)
 
         # collection iRODS path, PID and ticket --> otherId
         new = self.addAltID('iRODS', collPath)
