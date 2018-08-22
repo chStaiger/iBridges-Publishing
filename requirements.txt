@@ -1,0 +1,7 @@
+urllib3
+requests
+lxml
+bleach
+termcolor
+python-irodsclient
+
