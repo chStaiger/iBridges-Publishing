@@ -21,9 +21,8 @@ from irodsPublishCollection import iRodsPublishCollection
 from irodsRepositoryClient import iRodsRepositoryClient
 
 
-def create_argparser(argv=sys.argv[1:]):
+def parse_arguments(argv=sys.argv[1:]):
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('collection', type=str)
     parser.add_argument('--config', '-c',
                         type=str,
                         help=('config file ' +
@@ -52,15 +51,24 @@ def create_argparser(argv=sys.argv[1:]):
                               "user is asked interactively "))
     args, unknown = parser.parse_known_args([a for a in argv
                                              if a not in ['-h', '--help']])
-    config = read_config(args)
-    draft_name = str(config.get('type'))
-    draft_class = get_draft_class(draft_name)
+    parser.add_argument('collection', type=str)
+
     irods_group = parser.add_argument_group('irods configuration')
     iRodsPublishCollection.add_arguments(irods_group)
 
-    draft_group = parser.add_argument_group(draft_name + ' configuration')
-    draft_class.add_arguments(draft_group)
-    return parser
+    try:
+        config = read_config(args)
+        draft_name = config.get('type')
+        if draft_name is None:
+            raise RuntimeError('no repository type defined (--type argument)')
+        draft_name = str(draft_name)
+        draft_class = get_draft_class(draft_name)
+        draft_group = parser.add_argument_group(draft_name + ' configuration')
+        draft_class.add_arguments(draft_group)
+        return parser.parse_args(argv)
+    except Exception:
+        parser.print_help()
+        raise
 
 
 def read_config(args):
@@ -196,8 +204,8 @@ def publish_draft(publisher, logger_factory, batch=True, force=False):
 
 
 def main(argv=sys.argv[1:]):
-    parser = create_argparser(argv)
-    args = parser.parse_args(argv)
+    args = parse_arguments(argv)
+
     logger_factory = LoggerFactory(verbose=args.verbose,
                                    colored=not args.nocolor)
     logger = logger_factory.get_logger()
