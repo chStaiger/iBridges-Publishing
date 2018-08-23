@@ -20,6 +20,7 @@ class CollectionLock:
     def __enter__(self):
         self.lock()
         self.do_unlock = True
+        return self
 
     def __exit__(self, type, value, traceback):
         if self.do_unlock:
@@ -87,4 +88,4 @@ class CollectionLock:
         return new_acls
 
     def finalize(self):
-        self.do_unlock = True
+        self.do_unlock = False
