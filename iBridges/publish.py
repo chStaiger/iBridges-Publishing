@@ -16,6 +16,7 @@ from irods.session import iRODSSession
 from iBridges.logger import LoggerFactory
 from iBridges.logger import format_error
 from iBridges.logger import format_question
+from iBridges.collection_lock import CollectionLock
 from irodsPublishCollection import iRodsPublishCollection
 from irodsRepositoryClient import iRodsRepositoryClient
 
@@ -164,30 +165,32 @@ def execute_steps(cmds, batch=False, force=False):
 
 def publish_draft(publisher, logger_factory, batch=True, force=False):
     logger = logging.getLogger('ipublish')
-    owners = set()
     try:
-        # @todo lock
-        owners = set()
-        publisher.assignSeriesInformation()
-        if publisher.isPublished():
-            logger.error('Data already published {%s=%s}',
-                         publisher.getRepoKey('URL'),
-                         publisher.getRepoValue('URL', default='?'))
-            raise ValueError('Publication error')
-        if not publisher.checkCollection():
-            raise ValueError('Metadata validation error')
-        publisher.assignTicket()
-        publisher.createDraft()
-        execute_steps([publisher.patchDraft,
-                       publisher.patchDraftTickets,
-                       publisher.patchDraftPIDs,
-                       publisher.uploadToRepo],
-                      batch=batch,
-                      force=force)
-        raw_input(format_question('Press Enter to publish...'))
-        publisher.publishDraft()
-        publisher.createReportNoRaise(logger_factory.get_logs(), owners)
+        with CollectionLock(publisher.ipc) as lock:
+            publisher.assignSeriesInformation()
+            if publisher.isPublished():
+                logger.error('Data already published {%s=%s}',
+                             publisher.getRepoKey('URL'),
+                             publisher.getRepoValue('URL', default='?'))
+                raise ValueError('Publication error')
+            if not publisher.checkCollection():
+                raise ValueError('Metadata validation error')
+            publisher.assignTicket()
+            publisher.createDraft()
+            execute_steps([publisher.patchDraft,
+                           publisher.patchDraftTickets,
+                           publisher.patchDraftPIDs,
+                           publisher.uploadToRepo],
+                          batch=batch,
+                          force=force)
+            if not batch and not force:
+                raw_input(format_question('Press Enter to publish...'))
+            publisher.publishDraft()
+            owners = set()
+            publisher.createReportNoRaise(logger_factory.get_logs(), owners)
+            lock.finalize()
     except Exception:
+        owners = set()
         publisher.createReportNoRaise(logger_factory.get_logs(), owners)
         raise
 

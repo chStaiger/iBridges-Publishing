@@ -11,7 +11,7 @@ import subprocess
 
 # iRODS imports
 from irods.access import iRODSAccess
-
+from irods.exception import CollectionDoesNotExist
 # PID imports
 import uuid
 
@@ -49,7 +49,14 @@ class iRodsPublishCollection():
         else:
             self.logger = logger
         self.collection_path = collection
-        self.coll = self.session.collections.get(collection)
+        try:
+            self.coll = self.session.collections.get(collection)
+        except CollectionDoesNotExist:
+            self.logger.error('collection %s does not exist', collection)
+            raise
+        except Exception:
+            raise
+
         self.md = self.mdGet()
         self.http = http_endpoint  # http or davrods endpoint
 
@@ -60,6 +67,11 @@ class iRodsPublishCollection():
     @property
     def title(self):
         return self.md['TITLE']
+
+    @property
+    def user(self):
+        return self.session.users.get(self.session.username,
+                                      self.session.zone)
 
     def size(self):
         size = sum([obj.size for obj in self.coll.data_objects])
@@ -120,15 +132,17 @@ class iRodsPublishCollection():
 
         self.mdUpdate('TICKET', out.split(':')[1].strip())
         tickets[self.coll.path] = out.split(':')[1].strip()
-        self.mdUpdate('TECHNICALINFO',
-                      '{"irods_host": "%s", "irods_port": %d, ' +
-                      '"irods_user_name": "%s", "irods_zone_name": "%s"}; ' +
-                      'iget/ils -t <ticket> %s'
-                      % (self.session.host,
-                         1247,
-                         "anonymous",
-                         self.session.zone,
-                         self.coll.path))
+        techinfo_template = '{"irods_host": "%s", ' + \
+                            '"irods_port": %d, ' + \
+                            '"irods_user_name": "%s", ' + \
+                            '"irods_zone_name": "%s"}; ' + \
+                            'iget/ils -t <ticket> %s'
+        self.mdUpdate('TECHNICALINFO', techinfo_template %
+                      (self.session.host,
+                       1247,
+                       "anonymous",
+                       self.session.zone,
+                       self.coll.path))
         if not all:
             return tickets, True
 
