@@ -2,7 +2,7 @@
   "irods": {
     "host": "",
     "http_endpoint": "",
-    "env_file": ".../.irods/irods_environment.json",
+    "env_file": "/home/{USERNAME}/.irods/irods_environment.json",
     "user": "",
     "zone": "tempZone",
     "collection_prefix": "/tempZone/home/.../"

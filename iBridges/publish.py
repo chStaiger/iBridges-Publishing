@@ -60,7 +60,10 @@ def parse_arguments(argv=sys.argv[1:]):
         config = read_config(args)
         draft_name = config.get('type')
         if draft_name is None:
-            raise RuntimeError('no repository type defined (--type argument)')
+            print(format_error('missing argument --type or ' +
+                               'type entry in configuration file'))
+            parser.print_help()
+            sys.exit(8)
         draft_name = str(draft_name)
         draft_class = get_draft_class(draft_name)
         draft_group = parser.add_argument_group(draft_name + ' configuration')
