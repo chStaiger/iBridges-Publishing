@@ -1,0 +1,16 @@
+{
+  "irods": {
+    "host": "",
+    "http_endpoint": "",
+    "env_file": "{HOME}/.irods/irods_environment.json",
+    "user": "",
+    "zone": "tempZone",
+    "collection_prefix": "/tempZone/home/{USER}"
+  },
+  "type": "CkanDraft",
+  "draft": {
+    "api_token": "{TOKEN}",
+    "api_url": "http://{HOST}:8080/api/3",
+    "org": "{ORG}"
+  }
+}

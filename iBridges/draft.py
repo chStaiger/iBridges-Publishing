@@ -25,6 +25,13 @@ class Draft(object):
     def metaKeys(self):
         raise NotImplementedError("metaKeys not implemented")
 
+    @property
+    def hasData(self):
+        raise NotImplementedError("hasData not implemented")
+
+    def create(self, title):
+        raise NotImplementedError("create not implemented")
+
     def patch(self, metadata, collPath='irods'):
         raise NotImplementedError("patch not implemented")
 

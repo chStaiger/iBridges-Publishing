@@ -86,8 +86,12 @@ class iRodsRepositoryClient(object):
             self.draft.patchPIDs(self.pids)
 
     def uploadToRepo(self, remove=True):
-        for obj in self.ipc.downloadCollection(remove=remove):
-            self.draft.uploadFile(obj)
+        if self.draft.hasData:
+            for obj in self.ipc.downloadCollection(remove=remove):
+                self.draft.uploadFile(obj)
+        else:
+            self.logger.info('draft %s does not support data upload',
+                             self.draft.__class__.__name__)
 
     def publishDraft(self):
         '''
@@ -102,7 +106,7 @@ class iRodsRepositoryClient(object):
         self.updateRepoValue('URL', self.draft.url)
 
     def createDraft(self):
-        self.draft.create(self.ipc.title)
+        return self.draft.create(self.ipc.title)
 
     def createReport(self, content, owners=[]):
         '''

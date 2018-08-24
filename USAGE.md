@@ -44,6 +44,16 @@ cp dataverse.json.template dataverse.json
 vi dataverse.json
 ```
 
+### CKAN
+ - You need access to a demo CKAN instance and create a token there.
+ - [Guide](https://github.com/EUDAT-Training/B2FIND-Training/blob/master/04-install-CKAN-CentOS.md) to create an own CKAN instance.
+
+Configuration for iRods - CKAN integration
+```bash 
+cp ckan.json.template ckan.json
+vi ckan.json
+```
+
 ### Install python packages
 
 ```bash
@@ -59,4 +69,10 @@ iinit
 
 ```bash
 ./ipublish --config dataverse.json [COLLECTION]
+```
+
+or 
+
+```bash
+./ipublish --config ckan.json [COLLECTION]
 ```

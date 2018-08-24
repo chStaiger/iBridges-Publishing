@@ -120,11 +120,14 @@ class iRodsPublishCollection():
         # iticket create read <obj path>
         # imeta add <obj path> TICKET <ticket>
 
-        cmd = 'iticket create read ' + self.coll.path
-        p = subprocess.Popen([cmd],
-                             shell=True,  # @todo fix this: don't use shell
+        cmd = ['iticket', 'create', 'read', self.coll.path]
+        self.logger.info('execute %s', cmd.join(' '))
+        p = subprocess.Popen(cmd,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        self.logger.error('iticket %s', err)
+        self.logger.info('iticket %s', out)
         out, err = p.communicate()
         if out == '':
             self.logger.error('TICKET ERROR: No ticket created: %s ', err)
@@ -147,11 +150,14 @@ class iRodsPublishCollection():
             return tickets, True
 
         for obj in self.coll.data_objects:
-            cmd = 'iticket create read ' + obj.path
-            p = subprocess.Popen([cmd],
-                                 shell=True,  # @todo don't use shell
-                                 stderr=subprocess.PIPE)
+            cmd = ['iticket', 'create', 'read', obj.path]
+            self.logger.info('execute %s', cmd.join(' '))
+            p = subprocess.Popen(cmd,
+                                 stderr=subprocess.PIPE,
+                                 stdout=subprocess.PIPE)
             out, err = p.communicate()
+            self.logger.error('iticket %s', err)
+            self.logger.info('iticket %s', out)
             if out == '':
                 self.logger.error('TICKET ERROR: No ticket created %s', err)
                 return tickets, False

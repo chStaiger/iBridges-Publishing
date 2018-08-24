@@ -49,6 +49,10 @@ class DataverseDraft(Draft):
     def metaKeys(self):
         return ['TITLE', 'ABSTRACT', 'CREATOR', 'SUBJECT']
 
+    @property
+    def hasData(self):
+        return True
+
     def create(self, title):
         '''
         Create a draft in Dataverse with some minimal metadata.
