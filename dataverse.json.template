@@ -1,0 +1,16 @@
+{
+  "irods": {
+    "host": "",
+    "http_endpoint": "",
+    "env_file": "/home/{USERNAME}/.irods/irods_environment.json",
+    "user": "",
+    "zone": "tempZone",
+    "collection_prefix": "/tempZone/home/.../"
+  },
+  "type": "DataverseDraft",
+  "draft": {
+    "api_token": "",
+    "api_url": "",
+    "community": ""
+  }
+}
